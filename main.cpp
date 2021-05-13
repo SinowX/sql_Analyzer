@@ -18,6 +18,7 @@ const char* ACTION_UPDATE="update";
 const char* ACTION_DROP="drop";
 
 const char* PREOBJ_TABLE="table";
+const char* PREOBJ_TABLES="tables";
 const char* PREOBJ_COLUMNS="columns";
 const char* PREOBJ_INDEX="index";
 const char* PREOBJ_STATUS="status";
@@ -25,18 +26,15 @@ const char* PREOBJ_INTO="into";
 
 const char* CONDI_WHERE="where";
 const char* CONDI_FROM="from";
-// const char* CONDI_EQUAL="=";
 
 const char* EXEC_SET="set";
 const char* EXEC_VALUES="values";
-// const char* EXEC_EQUAL="=";
 
 const char SYM_EQUAL='=';
 const char SYM_SPACE=' ';
 const char SYM_COMMA=',';
 const char SYM_OPEN_PAREN='(';
 const char SYM_CLOSE_PAREN=')';
-// const char SYM_COLON=':';
 const char SYM_SEMICOLON=';';
 
 
@@ -68,6 +66,8 @@ char hostname[BUF_SZ];
 char cwd[BUF_SZ];
 seg_node *seg_header;
 
+
+
 int CurrentWorkDir();
 void GetUsername();
 void GetHostname();
@@ -78,7 +78,7 @@ void Lexical(char *cmd);
 seg_node* allocSegNode(seg_node *p);
 void freeSegNode();
 void trSegNode();
-
+int Yacc();
 
 int main(){
     int result = CurrentWorkDir();
@@ -108,6 +108,7 @@ int main(){
         }
         Lexical(argv);
         trSegNode();
+        freeSegNode();
         // printf("%s\n",argv);
         // printf("%d\n",strlen(argv));
     }
@@ -138,7 +139,7 @@ char ctoLower(char c){
     {
         c+=32;
     }
-    else if(c>=97&&c<123)
+    else if((c>=97&&c<123)||c>=48&&c<58)
     {}
     else if(c==SYM_SPACE||c==SYM_SEMICOLON||
     c==SYM_COMMA||c==SYM_EQUAL||c==SYM_OPEN_PAREN||
@@ -223,6 +224,7 @@ seg_node* allocSegNode(seg_node *p)
     tmp->next=NULL;
     return tmp;
 }
+
 void freeSegNode(){
     stack<seg_node*> route;
     seg_node *p,*q;
@@ -233,9 +235,12 @@ void freeSegNode(){
     }
     while(!route.empty()){
         p=route.top();
+        // cout<<"Now Free "<<p->segment<<endl;
         free(p->next);
+        route.pop();
     }
 }
+
 void trSegNode(){
     seg_node *p;
     p=seg_header;
@@ -243,5 +248,79 @@ void trSegNode(){
         printf("%s\n",p->segment);
         p=p->next;
 
+    }
+}
+
+int Yacc(){
+    
+    char Action[BUF_SZ];
+    char PreObject[BUF_SZ];
+    char Object[BUF_SZ];
+    char Exec[BUF_SZ];
+    char Condition[BUF_SZ]; 
+
+    seg_node *p;
+    p=seg_header;
+    if (p->segment==ACTION_CREATE){
+        strcpy(Action,p->segment);
+        p=p->next;
+        if(p->segment==PREOBJ_TABLE){
+            strcpy(PreObject,p->segment);
+            p=p->next;
+
+            strcpy(Object,p->segment);
+            p=p->next;
+
+            // 处理 column 对应 attributes
+
+        }else{
+            return ERROR_WRONG_PARAMETER;
+        }
+    }
+    else if(p->segment==ACTION_SHOW){
+        strcpy(Action,p->segment);
+        p=p->next;
+
+        if(p->segment==PREOBJ_TABLES){
+            
+        }
+        else if(p->segment==PREOBJ_COLUMNS){
+
+        }
+        else if(p->segment==PREOBJ_INDEX){
+
+        }
+        else if(p->segment==PREOBJ_STATUS){
+
+        }
+        else{
+            return ERROR_WRONG_PARAMETER;
+        }
+
+    }
+    else if(p->segment==ACTION_INSERT){
+        strcpy(Action,p->segment);
+        p=p->next;
+
+        if (p->segment==PREOBJ_INTO){
+
+        }
+    }
+    else if(p->segment==ACTION_UPDATE){
+        strcpy(Action,p->segment);
+        p=p->next;
+
+
+    }
+    else if(p->segment==ACTION_DROP){
+        strcpy(Action,p->segment);
+        p=p->next;
+        if(p->segment==PREOBJ_TABLE){
+
+        }else{
+            // should be column name
+        }
+    }else{
+        return ERROR_WRONG_PARAMETER;
     }
 }
