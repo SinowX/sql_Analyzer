@@ -15,6 +15,8 @@ const char* PREOBJ_COLUMNS="columns";
 const char* PREOBJ_INDEX="index";
 const char* PREOBJ_STATUS="status";
 const char* PREOBJ_INTO="into";
+const char* PREOBJ_ROW="row";
+const char* PREOBJ_VALUE="value";
 
 const char* CONDI_WHERE="where";
 const char* CONDI_FROM="from";
@@ -36,7 +38,9 @@ enum{
     ERROR_SYSTEM,
     ERROR_MISSING_PARAMETER,
     ERROR_TOO_MANY_PARAMETER,
+    ERROR_TOO_FEW_PARAMETER,
     ERROR_WRONG_PARAMETER,
+    ERROR_KEY_VALUE,
     ERROR_OTHER
 };
 
@@ -63,5 +67,11 @@ seg_node* allocSegNode(seg_node *p);
 void freeSegNode();
 void trSegNode();
 int Yacc();
+
+char username[BUF_SZ];
+char hostname[BUF_SZ];
+char cwd[BUF_SZ];
+cmd_pack the_pack;
+seg_node *seg_header;
 
 #endif

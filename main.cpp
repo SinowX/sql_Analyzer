@@ -8,7 +8,7 @@
 #include<queue>
 #include"definition.h"
 #include"function.h"
-
+#include"yacc.h"
 using namespace std;
 
 int main(){
