@@ -7,6 +7,7 @@
 #include<pwd.h>
 #include<stdlib.h>
 #include<stdio.h>
+#include<string>
 // #include"definition.h"
 // using namespace std;
 
@@ -66,7 +67,8 @@ int handle_obj(char *object ,seg_node *p)
 
 int handle_exec(char *action,char *exec, seg_node **p)
 {
-    std::queue<char [BUF_SZ]> keyq,valueq;
+    // std::queue<char [BUF_SZ]> keyq,valueq;
+    std::queue<std::string> keyq,valueq;
     char buff[BUF_SZ]="-1";
     // 0 wait for segment, 1 wait for ';'
     int switcher=0;
@@ -132,9 +134,9 @@ int handle_exec(char *action,char *exec, seg_node **p)
             {
                 while(!keyq.empty())
                 {
-                    strcat(exec,keyq.front());
+                    strcat(exec,keyq.front().c_str());
                     strcat(exec,"=");
-                    strcat(exec,valueq.front());
+                    strcat(exec,valueq.front().c_str());
                     strcat(exec,";");
                     keyq.pop();
                     valueq.pop();
@@ -256,9 +258,9 @@ int handle_exec(char *action,char *exec, seg_node **p)
             {
                 while(!keyq.empty())
                 {
-                    strcat(exec,keyq.front());
+                    strcat(exec,keyq.front().c_str());
                     strcat(exec,"=");
-                    strcat(exec,valueq.front());
+                    strcat(exec,valueq.front().c_str());
                     strcat(exec,";");
                     keyq.pop();
                     valueq.pop();
@@ -319,7 +321,8 @@ int handle_exec(char *action,char *exec, seg_node **p)
         }else
             return ERROR_WRONG_PARAMETER;
         //set	[$columnname]	=	[$columnvalue]	
-    }
+    }else
+        return ERROR_WRONG_PARAMETER;
 }
 
 int handle_condi(char *action, char *condi, seg_node** p)
