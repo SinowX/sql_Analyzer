@@ -45,10 +45,11 @@ enum{
 };
 
 typedef struct cmd_pack{
-    char *act;
-    char *obj;
-    char *exec;
-    char *condi;
+    char act[BUF_SZ];
+    char preobj[BUF_SZ];
+    char obj[BUF_SZ];
+    char exec[BUF_SZ];
+    char condi[BUF_SZ];
 }cmd_pack;
 
 typedef struct seg_node{
@@ -73,5 +74,5 @@ char hostname[BUF_SZ];
 char cwd[BUF_SZ];
 cmd_pack the_pack;
 seg_node *seg_header;
-
+seg_node *p;
 #endif

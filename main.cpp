@@ -9,7 +9,7 @@
 #include"definition.h"
 #include"function.h"
 #include"yacc.h"
-using namespace std;
+// using namespace std;
 
 int main(){
     int result = CurrentWorkDir();
@@ -39,14 +39,21 @@ int main(){
         }
         Lexical(argv);
         trSegNode();
-        freeSegNode();
+        // freeSegNode();
         // printf("%s\n",argv);
         // printf("%d\n",strlen(argv));
         if(Yacc()!=RESULT_NORMAL)
             printf("Error\n");
         else
+        {
+            printf("Action: %s\n",the_pack.act);
+            printf("PreObj: %s\n",the_pack.preobj);
+            printf("Object: %s\n",the_pack.obj);
+            printf("Exec: %s\n",the_pack.exec);
+            printf("Condi: %s\n",the_pack.condi);
             printf("Complete.\n");
-    }
+        }
+}
 
     exit(RESULT_NORMAL);
 }

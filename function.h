@@ -1,4 +1,4 @@
-#include"definition.h"
+// #include"definition.h"
 // #include<
 #include<string.h>
 #include<unistd.h>
@@ -8,7 +8,7 @@
 #include<stdlib.h>
 #include<stdio.h>
 
-using namespace std;
+// using namespace std;
 
 
 
@@ -31,9 +31,10 @@ void GetHostname(){
 
 // cmd_pack * init_pack(int len_act, int len_obj, int len_exec, int len_condi);
 
-void set_pack(char *act,char *obj,char *exec,char *condi)
+void set_pack(char *act,char *preobj,char *obj,char *exec,char *condi)
 {
     strcpy(the_pack.act,act);
+    strcpy(the_pack.preobj,preobj);
     strcpy(the_pack.obj,obj);
     strcpy(the_pack.exec,exec);
     strcpy(the_pack.condi,condi);
@@ -132,7 +133,7 @@ seg_node* allocSegNode(seg_node *p)
 }
 
 void freeSegNode(){
-    stack<seg_node*> route;
+    std::stack<seg_node*> route;
     seg_node *p,*q;
     p=seg_header;
     while(p->next!=NULL){
