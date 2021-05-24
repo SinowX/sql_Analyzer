@@ -42,6 +42,8 @@ int main(){
         freeSegNode();
         // printf("%s\n",argv);
         // printf("%d\n",strlen(argv));
+        // Yacc();
+        printf("Complete.\n");
     }
 
     exit(RESULT_NORMAL);
