@@ -15,7 +15,7 @@ int handle_act(char action[BUF_SZ])
 {
     if(!strcmp(p->segment,ACTION_CREATE)||!strcmp(p->segment,ACTION_SHOW)||
     !strcmp(p->segment,ACTION_INSERT)||!strcmp(p->segment,ACTION_UPDATE)||
-    !strcmp(p->segment,ACTION_DROP))
+    !strcmp(p->segment,ACTION_DROP)||!strcmp(p->segment,ACTION_SELECT)) // for select
     {
         strcpy(action,p->segment);
         return RESULT_NORMAL;
@@ -45,288 +45,108 @@ int handle_preobj(char action[BUF_SZ],char preobj[BUF_SZ])
         return ERROR_WRONG_PARAMETER;
 }
 
-int handle_obj(char object[BUF_SZ])
+int handle_obj(char action[BUF_SZ],char object[BUF_SZ])
 {
+    
+    if(strcmp(action,ACTION_SELECT))
+        strcpy(object,p->segment);
+    else
+    {
+        bool ifShouldCOMMA=false;
+        bool ifFirstRow=true;
+        while(true)
+        {
+            if(
+                p->next==NULL||
+                !strcmp(p->next->segment,"")||
+                !strcmp(p->next->segment,SYM_EQUAL)||
+                !strcmp(p->next->segment,SYM_SPACE)||
+                !strcmp(p->next->segment,SYM_OPEN_PAREN)||
+                !strcmp(p->next->segment,SYM_CLOSE_PAREN)||
+                !strcmp(p->next->segment,SYM_SEMICOLON)
+                )
+                return ERROR_WRONG_PARAMETER;
+            else if(!ifFirstRow)
+            {
+                p=p->next;
+            }
+            ifFirstRow=false;
 
-    strcpy(object,p->segment);
+            if(!strcmp(p->segment,SYM_STAR))
+            {
+                //如果是 * ，则 obj 中只有 *
+                strcat(object,p->segment);
+                break;
+            }
+            if(!ifShouldCOMMA&&strcmp(p->segment,SYM_COMMA))
+            {
+                strcat(object,p->segment);
+                strcat(object,":");
+                ifShouldCOMMA=!ifShouldCOMMA;
+            }
+            else if(ifShouldCOMMA&&!strcmp(p->segment,SYM_COMMA))
+            {
+                ifShouldCOMMA=!ifShouldCOMMA;
+                continue;
+            }
+            else if(ifShouldCOMMA&&strcmp(p->segment,SYM_COMMA))
+            {
+                ifShouldCOMMA=!ifShouldCOMMA;
+                break;
+            }
+        }
+    }
     return RESULT_NORMAL;
-    // if(
-    //     !strcmp(action,ACTION_CREATE)||
-    //     action==ACTION_SHOW||
-    //   !strcmp !(action,ACTION_INSERT)||
-    //     (action,ACTION_UPDATE)||
-    //     !strcmp(action,ACTION_DROP)
-    // )
-    // {
-    //     strcpy(object,p->segment);
-    //     return RESULT_NORMAL;
-    // }
-    // else
-    //     return ERROR_WRONG_PARAMETER;
+
 }
-
-// int handle_exec(char action[BUF_SZ],char exec[BUF_SZ], seg_node **p)
-// {
-//     // std::queue<char [BUF_SZ]> keyq,valueq;
-//     std::queue<std::string> keyq,valueq;
-//     char buff[BUF_SZ]="-1";
-//     // 0 wait for segment, 1 wait for ';'
-//     int switcher=0;
-//     if(!strcmp(action,ACTION_CREATE))
-//     {
-//         // (	[$columnname	$attributes]	)
-
-//         if(!strcmp((*p)->segment,SYM_OPEN_PAREN))
-//         {
-//             while(
-//                 (*p)->next!=NULL&&
-//                 strcmp((*p)->next->segment,"")&&
-//                 strcmp((*p)->next->segment,SYM_CLOSE_PAREN)
-//             )
-//             {
-//                 if(
-//                     !strcmp((*p)->next->segment,SYM_SEMICOLON)||
-//                     !strcmp((*p)->next->segment,SYM_OPEN_PAREN)||
-//                     !strcmp((*p)->next->segment,SYM_EQUAL)
-//                     )
-//                     return ERROR_WRONG_PARAMETER;
-
-//                 (*p)=(*p)->next;
-//                 //一个 column name
-//                 keyq.push((*p)->segment);
-//                 while(
-//                     (*p)->next!=NULL&&
-//                     // strcmp((*p)->next->segment,"")&&
-//                     strcmp((*p)->next->segment,SYM_COMMA)&&
-//                     strcmp((*p)->next->segment,SYM_CLOSE_PAREN)
-//                 )
-//                 {
-
-//                     if(
-//                         !strcmp((*p)->next->segment,SYM_SEMICOLON)||
-//                         !strcmp((*p)->next->segment,SYM_EQUAL)
-//                         )
-//                         return ERROR_WRONG_PARAMETER;
-
-//                     // if((*p)->next==NULL)
-//                     //     return ERROR_WRONG_PARAMETER;
-//                     //清空 buffer
-//                     if(!strcmp(buff,"-1"))
-//                         strcpy(buff,""); 
-//                     (*p)=(*p)->next;
-//                     strcat(buff,(*p)->segment);
-//                     strcat(buff,":");
-//                 }
-//                 if(strcmp(buff,"-1")) // 指令中有 attributes 
-//                     valueq.push(buff);
-//                 else //若不存在 attributes 则错误
-//                     return ERROR_WRONG_PARAMETER;
-                
-//                 strcpy(buff,"-1");
-//             } // 每个 column attributes 至少会有一个字段用于指明类型
-            
-//             //如果没有 列 则错误
-//             if(keyq.size()==0)
-//                 return ERROR_WRONG_PARAMETER;
-
-//             //如果 列的数量 与 列属性的数量 不对应，则错误
-//             if(keyq.size()==valueq.size())
-//             {
-//                 while(!keyq.empty())
-//                 {
-//                     strcat(exec,keyq.front().c_str());
-//                     strcat(exec,"=");
-//                     strcat(exec,valueq.front().c_str());
-//                     strcat(exec,";");
-//                     keyq.pop();
-//                     valueq.pop();
-//                 }
-//                 return RESULT_NORMAL;
-//             }
-//             else
-//                 return(ERROR_KEY_VALUE);
-//         }
-//         else
-//             return ERROR_WRONG_PARAMETER;
-
-//     }
-//     else if(!strcmp(action,ACTION_INSERT))
-//     {
-//         // (	[$columnname]	)		values	(	[$columnvalue]	)
-
-//         if(!strcmp((*p)->segment,SYM_OPEN_PAREN))
-//         {
-//             while(
-//                 (*p)->next!=NULL&&
-//                 strcmp((*p)->next->segment,"")&&
-//                 strcmp((*p)->next->segment,SYM_CLOSE_PAREN)
-//             )
-//             {
-//                 if(
-//                     !strcmp((*p)->next->segment,SYM_SEMICOLON)||
-//                     !strcmp((*p)->next->segment,SYM_OPEN_PAREN)||
-//                     !strcmp((*p)->next->segment,SYM_EQUAL)
-//                     )
-//                     return ERROR_WRONG_PARAMETER;
-
-
-//                 (*p)=(*p)->next;
-//                 // if(strcmp((*p)->segment,SYM_COMMA))
-//                 //     //括号内首个字段为 逗号
-//                 //     if(keyq.size()==0)
-//                 //         return ERROR_WRONG_PARAMETER;
-//                 //     else
-//                 //         continue;
-
-//                 if(switcher==0&&strcmp((*p)->segment,SYM_COMMA))
-//                 {
-//                     keyq.push((*p)->segment);
-//                     switcher=1;
-//                 }
-//                 else if(switcher==1&&!strcmp((*p)->segment,SYM_COMMA))
-//                 {
-//                     switcher=0;
-//                     continue;
-//                 }
-//                 else
-//                     return ERROR_WRONG_PARAMETER;
-//             }
-
-//             // values
-//             if((*p)->next==NULL||strcmp((*p)->next->segment,EXEC_VALUES))
-//                 return ERROR_WRONG_PARAMETER;
-            
-//             (*p)=(*p)->next;
-
-//             switcher=0;
-
-//             // 下一个字段要由 左圆括号开始
-//             if(
-//                 (*p)->next==NULL||
-//                 strcmp((*p)->next->segment,SYM_OPEN_PAREN)
-//             )
-//                 return ERROR_WRONG_PARAMETER;
-            
-//             (*p)=(*p)->next;
-
-//             while(
-//                 (*p)->next!=NULL&&
-//                 strcmp((*p)->next->segment,"")&&
-//                 strcmp((*p)->next->segment,SYM_CLOSE_PAREN)
-//             )
-//             {
-//                 if(
-//                     !strcmp((*p)->next->segment,SYM_SEMICOLON)||
-//                     !strcmp((*p)->next->segment,SYM_OPEN_PAREN)||
-//                     !strcmp((*p)->next->segment,SYM_EQUAL)
-//                     )
-//                     return ERROR_WRONG_PARAMETER;
-
-//                 (*p)=(*p)->next;
-//                 // if(strcmp((*p)->segment,SYM_COMMA))
-//                 //     //括号内首个字段为 逗号
-//                 //     if(keyq.size()==0)
-//                 //         return ERROR_WRONG_PARAMETER;
-//                 //     else
-//                 //         continue;
-
-//                 if(switcher==0&&strcmp((*p)->segment,SYM_COMMA))
-//                 {
-//                     valueq.push((*p)->segment);
-//                     switcher=1;
-//                 }
-//                 else if(switcher==1&&!strcmp((*p)->segment,SYM_COMMA))
-//                 {
-//                     switcher=0;
-//                     continue;
-//                 }
-//                 else
-//                     return ERROR_WRONG_PARAMETER;
-
-//                 // (*p)=(*p)->next;
-//                 // if(strcmp((*p)->segment,SYM_COMMA))
-//                 //     continue;
-//                 // valueq.push((*p)->segment);
-//             }
-
-//             // 如果没有列 则错误
-//             if(keyq.size()==0)
-//                 return ERROR_WRONG_PARAMETER;
-
-//             // 如果 列数 与 值的数量 不同 则错误
-//             if(keyq.size()==valueq.size())
-//             {
-//                 while(!keyq.empty())
-//                 {
-//                     strcat(exec,keyq.front().c_str());
-//                     strcat(exec,"=");
-//                     strcat(exec,valueq.front().c_str());
-//                     strcat(exec,";");
-//                     keyq.pop();
-//                     valueq.pop();
-//                 }
-//                 return RESULT_NORMAL;
-//             }
-//             else
-//                 return(ERROR_KEY_VALUE);
-//         }
-//         else
-//             return ERROR_WRONG_PARAMETER;
-//     }
-//     else if((action,ACTION_UPDATE))
-//     {
-//         if((*p)->segment==EXEC_SET)
-//         {
-//             if(
-//                 (*p)->next!=NULL&&
-//                 strcmp((*p)->next->segment,"")&&
-//                 strcmp((*p)->next->segment,SYM_SEMICOLON)&&
-//                 strcmp((*p)->next->segment,SYM_OPEN_PAREN)&&
-//                 strcmp((*p)->next->segment,SYM_CLOSE_PAREN)&&
-//                 ((*p)->next->segment,SYM_EQUAL)
-//             )
-//             {
-//                 (*p)=(*p)->next;
-//                 strcat(exec,(*p)->segment);
-                
-//                 if(
-//                     (*p)->next!=NULL&&
-//                     !strcmp((*p)->next->segment,SYM_EQUAL)
-//                 )
-//                     (*p)=(*p)->next;
-//                 else
-//                     return ERROR_WRONG_PARAMETER;
-
-//                 if(
-//                     (*p)->next!=NULL&&
-//                     strcmp((*p)->next->segment,"")&&
-//                     strcmp((*p)->next->segment,SYM_SEMICOLON)&&
-//                     strcmp((*p)->next->segment,SYM_OPEN_PAREN)&&
-//                     strcmp((*p)->next->segment,SYM_CLOSE_PAREN)&&
-//                     ((*p)->next->segment,SYM_EQUAL)
-//                 )
-//                 {
-//                     (*p)=(*p)->next;
-//                     strcat(exec,"=");
-//                     strcat(exec,(*p)->segment);
-//                     return RESULT_NORMAL;
-//                 }
-//                 else
-//                 {
-//                     return ERROR_WRONG_PARAMETER;
-//                 }
-//             }
-//             else
-//                 return ERROR_WRONG_PARAMETER;
-//         }else
-//             return ERROR_WRONG_PARAMETER;
-//         //set	[$columnname]	=	[$columnvalue]	
-//     }else
-//         return ERROR_WRONG_PARAMETER;
-// }
 
 int handle_exec(char action[BUF_SZ],char exec[BUF_SZ])
 {
+    // for select
+    if(!strcmp(ACTION_SELECT,action))
+    {
+        if(
+            p->next==NULL||
+            !strcmp(p->next->segment,"")||
+            !strcmp(p->next->segment,SYM_EQUAL)||
+            !strcmp(p->next->segment,SYM_SPACE)||
+            !strcmp(p->next->segment,SYM_OPEN_PAREN)||
+            !strcmp(p->next->segment,SYM_CLOSE_PAREN)||
+            !strcmp(p->next->segment,SYM_SEMICOLON)||
+            !strcmp(p->next->segment,SYM_STAR)||
+            !strcmp(p->next->segment,SYM_COMMA)
+            )
+            return ERROR_WRONG_PARAMETER;
+        else
+        {
+            // p=p->next;
+            if(!strcmp(p->segment,EXEC_FROM))    
+            {
+                // strcat(exec,p->segment);
+                
+                if(
+                    p->next==NULL||
+                    !strcmp(p->next->segment,"")||
+                    !strcmp(p->next->segment,SYM_EQUAL)||
+                    !strcmp(p->next->segment,SYM_SPACE)||
+                    !strcmp(p->next->segment,SYM_OPEN_PAREN)||
+                    !strcmp(p->next->segment,SYM_CLOSE_PAREN)||
+                    !strcmp(p->next->segment,SYM_SEMICOLON)||
+                    !strcmp(p->next->segment,SYM_STAR)||
+                    !strcmp(p->next->segment,SYM_COMMA)
+                    )
+                    return ERROR_WRONG_PARAMETER;
+                else
+                {
+                    p=p->next;
+                    strcat(exec,p->segment);
+                    return RESULT_NORMAL;
+                }                
+            }
+            else
+                return ERROR_WRONG_PARAMETER;
+        }
+    }
     // std::queue<char [BUF_SZ]> keyq,valueq;
     std::string tmpstr;
     std::queue<std::string> keyq,valueq;
@@ -616,91 +436,6 @@ int handle_exec(char action[BUF_SZ],char exec[BUF_SZ])
         return ERROR_WRONG_PARAMETER;
 }
 
-// int handle_condi(char action[BUF_SZ], char condi[BUF_SZ], seg_node* p)
-// {   //若是 show 非 tables命令 或 drop row 命令，且 此字段为 CONDI_FROM
-//     if((!strcmp(action,ACTION_SHOW)||!strcmp(action,ACTION_DROP))&&!strcmp((*p)->segment,CONDI_FROM))
-//     {
-//         //不对 from 关键字 进行保存，只需要保存 from 之后的 $tablename
-//         //检查是否存在下一个字段 且 下一个字段是否为空串或分号或圆括号或逗号或等号
-//         if(
-//             (*p)->next==NULL||
-//             !strcmp((*p)->next->segment,"")||
-//             !strcmp((*p)->next->segment,SYM_SEMICOLON)||
-//             !strcmp((*p)->next->segment,SYM_OPEN_PAREN)||
-//             !strcmp((*p)->next->segment,SYM_CLOSE_PAREN)||
-//             !strcmp((*p)->next->segment,SYM_EQUAL)
-//             )
-//             return(ERROR_WRONG_PARAMETER);
-//         else
-//         {
-//             (*p)=(*p)->next;
-//             strcat(condi,(*p)->segment);
-//             return RESULT_NORMAL;
-//         }
-//         // if(
-//         //     (*p)->next!=NULL&&
-//         //     strcmp((*p)->next->segment,SYM_SEMICOLON)&&
-//         //     strcmp((*p)->next->segment,"")
-//         // )
-//         // {
-//         //     (*p)=(*p)->next;
-//         //     strcat(condi,(*p)->segment);
-//         //     return RESULT_NORMAL;
-//         // }else{
-//         //     return ERROR_WRONG_PARAMETER;
-//         // }
-//     }
-//     else if((action,ACTION_UPDATE)&&(*p)->segment==CONDI_WHERE)
-//     {
-//         // where
-//         if(
-//             (*p)->next!=NULL||
-//             strcmp((*p)->next->segment,"")&&
-//             strcmp((*p)->next->segment,SYM_SEMICOLON)&&
-//             strcmp((*p)->next->segment,SYM_OPEN_PAREN)&&
-//             strcmp((*p)->next->segment,SYM_CLOSE_PAREN)&&
-//             strcmp((*p)->next->segment,SYM_EQUAL)
-//             )
-//             {
-//                 (*p)=(*p)->next;
-//                 // $columnname
-//                 strcat(condi,(*p)->segment);
-//                 if(
-//                     (*p)->next!=NULL||
-//                     !strcmp((*p)->next->segment,SYM_EQUAL)
-//                     )
-//                     {
-//                         (*p)=(*p)->next;
-//                         // =
-//                         strcat(condi,(*p)->segment);
-                        
-//                         if(
-//                             (*p)->next!=NULL||
-//                             strcmp((*p)->next->segment,"")&&
-//                             strcmp((*p)->next->segment,SYM_SEMICOLON)&&
-//                             strcmp((*p)->next->segment,SYM_OPEN_PAREN)&&
-//                             strcmp((*p)->next->segment,SYM_CLOSE_PAREN)&&
-//                             ((*p)->next->segment,SYM_EQUAL)
-//                             )
-//                             {
-//                                 (*p)=(*p)->next;
-//                                 // $columnname2
-//                                 strcat(condi,(*p)->segment);
-//                                 return RESULT_NORMAL;
-//                             }
-//                             else
-//                                 return ERROR_WRONG_PARAMETER;
-//                     }
-//                     else
-//                         return ERROR_WRONG_PARAMETER;
-//             }
-//             else
-//                 return ERROR_WRONG_PARAMETER;
-//     }else{
-//         return ERROR_WRONG_PARAMETER;
-//     }
-// }
-
 
 int handle_condi(char action[BUF_SZ], char condi[BUF_SZ])
 {   //若是 show 非 tables命令 或 drop row 命令，且 此字段为 CONDI_FROM
@@ -736,7 +471,7 @@ int handle_condi(char action[BUF_SZ], char condi[BUF_SZ])
         //     return ERROR_WRONG_PARAMETER;
         // }
     }
-    else if((action,ACTION_UPDATE)&&!strcmp(p->segment,CONDI_WHERE))
+    else if((!strcmp(action,ACTION_UPDATE)||!strcmp(action,ACTION_SELECT))&&!strcmp(p->segment,CONDI_WHERE))
     {
         // where
         if(
@@ -826,12 +561,13 @@ int Yacc(){
         !strcmp(p->next->segment,SYM_EQUAL)
         )
         return(ERROR_TOO_FEW_PARAMETER);
-    else
+    else if(strcmp(Action,ACTION_SELECT)) //for select ,select 没有 preObj
         p=p->next;
 
     //处理第二个字段是否时合法 PreObj
-    if(handle_preobj(Action,PreObject)==ERROR_WRONG_PARAMETER)
-        return(ERROR_WRONG_PARAMETER);
+    if(strcmp(Action,ACTION_SELECT))
+        if(handle_preobj(Action,PreObject)==ERROR_WRONG_PARAMETER)
+            return(ERROR_WRONG_PARAMETER);
 
     // stage Object
     // Show 命令不需要 Obiect
@@ -851,7 +587,7 @@ int Yacc(){
         else
             p=p->next;
         //处理第三个字段是否为合法 Object
-        if(handle_obj(Object)==ERROR_WRONG_PARAMETER)
+        if(handle_obj(Action,Object)==ERROR_WRONG_PARAMETER)
             return(ERROR_WRONG_PARAMETER);
     }
 
@@ -870,7 +606,7 @@ int Yacc(){
             !strcmp(p->next->segment,SYM_EQUAL)
             )
             return(ERROR_TOO_FEW_PARAMETER);
-        else
+        else if(strcmp(Action,ACTION_SELECT))
             p=p->next;
         //处理第四个字段是否为合法 Exec
         if(handle_exec(Action,Exec)!=RESULT_NORMAL)
@@ -887,7 +623,7 @@ int Yacc(){
     // 仅 Show 非 tables 命令 与 Update 命令 与 Drop row 命令 需要 Condition 字段
     if(
         (!strcmp(Action,ACTION_SHOW)&&strcmp(PreObject,PREOBJ_TABLES))||
-        !strcmp(Action,ACTION_UPDATE)||
+        !strcmp(Action,ACTION_UPDATE)||!strcmp(Action,ACTION_SELECT)||
         (!strcmp(Action,ACTION_DROP)&&!strcmp(PreObject,PREOBJ_ROW))
     )
     {

@@ -4,6 +4,7 @@
 #define BUF_SZ 256
 
 const char* ACTION_CREATE="create";
+const char* ACTION_SELECT="select"; //for select
 const char* ACTION_SHOW="show";
 const char* ACTION_INSERT="insert";
 const char* ACTION_UPDATE="update";
@@ -23,6 +24,7 @@ const char* CONDI_FROM="from";
 
 const char* EXEC_SET="set";
 const char* EXEC_VALUES="values";
+const char* EXEC_FROM="from"; //for select
 
 const char* SYM_EQUAL="=";
 const char* SYM_SPACE=" ";
@@ -30,6 +32,8 @@ const char* SYM_COMMA=",";
 const char* SYM_OPEN_PAREN="(";
 const char* SYM_CLOSE_PAREN=")";
 const char* SYM_SEMICOLON=";";
+const char* SYM_STAR="*"; // for select
+
 
 
 enum{
