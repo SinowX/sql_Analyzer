@@ -1,0 +1,167 @@
+[sinow@Maj ~]$ cd workspace/parser_analyzer/
+[sinow@Maj parser_analyzer]$ ./main 
+[sinow@Maj]$ create table sinow (fuck int primary,shit double not null,holy time null);
+create
+table
+sinow
+(
+fuck
+int
+primary
+,
+shit
+double
+not
+null
+,
+holy
+time
+null
+)
+;
+Action: create
+PreObj: table
+Object: sinow
+Exec: fuck=int:primary:;shit=double:not:null:;holy=time:null:;
+Condi: 
+Complete.
+[sinow@Maj]$ show tables;
+show
+tables
+;
+Action: show
+PreObj: tables
+Object: 
+Exec: 
+Condi: 
+Complete.
+[sinow@Maj]$ show columns from sinow;
+show
+columns
+from
+sinow
+;
+Action: show
+PreObj: columns
+Object: 
+Exec: 
+Condi: sinow
+Complete.
+[sinow@Maj]$ show index from sinow;
+show
+index
+from
+sinow
+;
+Action: show
+PreObj: index
+Object: 
+Exec: 
+Condi: sinow
+Complete.
+[sinow@Maj]$ insert into sinow (fuck,shit,holy) values (23,32,65);
+insert
+into
+sinow
+(
+fuck
+,
+shit
+,
+holy
+)
+values
+(
+23
+,
+32
+,
+65
+)
+;
+Action: insert
+PreObj: into
+Object: sinow
+Exec: fuck=23;shit=32;holy=65;
+Condi: 
+Complete.
+[sinow@Maj]$ update value sinow set fuck=44 where shit=12;
+update
+value
+sinow
+set
+fuck
+=
+44
+where
+shit
+=
+12
+;
+Action: update
+PreObj: value
+Object: sinow
+Exec: fuck=44
+Condi: shit=12
+Complete.
+[sinow@Maj]$ drop table sinow;
+drop
+table
+sinow
+;
+Action: drop
+PreObj: table
+Object: sinow
+Exec: 
+Condi: 
+Complete.
+[sinow@Maj]$ select fuck,shit from sinow where shit=43;
+select
+fuck
+,
+shit
+from
+sinow
+where
+shit
+=
+43
+;
+Action: select
+PreObj: 
+Object: fuck:shit:
+Exec: sinow
+Condi: shit=43
+Complete.
+[sinow@Maj]$ select * from sinow where si=ad;
+select
+*
+from
+sinow
+where
+si
+=
+ad
+;
+Action: select
+PreObj: 
+Object: *
+Exec: sinow
+Condi: si=ad
+Complete.
+[sinow@Maj]$ drop row from sinow where saus=asd;
+drop
+row
+from
+sinow
+where
+saus
+=
+asd
+;
+Action: drop
+PreObj: 
+Object: row
+Exec: sinow
+Condi: saus=asd
+Complete.

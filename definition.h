@@ -33,6 +33,7 @@ const char* SYM_OPEN_PAREN="(";
 const char* SYM_CLOSE_PAREN=")";
 const char* SYM_SEMICOLON=";";
 const char* SYM_STAR="*"; // for select
+const char* SYM_DOT=".";
 
 
 

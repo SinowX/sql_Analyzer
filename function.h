@@ -50,7 +50,7 @@ char ctoLower(char c){
     {}
     else if(c==SYM_SPACE[0]||c==SYM_SEMICOLON[0]||
     c==SYM_COMMA[0]||c==SYM_EQUAL[0]||c==SYM_OPEN_PAREN[0]||
-    c==SYM_CLOSE_PAREN[0])
+    c==SYM_CLOSE_PAREN[0]||c==SYM_DOT[0]||c==SYM_STAR[0])
     {}
     else
     {
@@ -94,7 +94,8 @@ void Lexical(char *cmd){
             }
         }else if(cmd[i]==SYM_EQUAL[0]||cmd[i]==SYM_SPACE[0]||
         cmd[i]==SYM_COMMA[0]||cmd[i]==SYM_OPEN_PAREN[0]||
-        cmd[i]==SYM_CLOSE_PAREN[0]||cmd[i]==SYM_SEMICOLON[0])
+        cmd[i]==SYM_CLOSE_PAREN[0]||cmd[i]==SYM_SEMICOLON[0]||
+        cmd[i]==SYM_STAR[0])
         {
             if(if_space==1){
                 p->segment[0]=cmd[i];

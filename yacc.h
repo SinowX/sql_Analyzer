@@ -33,9 +33,9 @@ int handle_preobj(char action[BUF_SZ],char preobj[BUF_SZ])
         (!strcmp(action,ACTION_SHOW)&&!strcmp(p->segment,PREOBJ_INDEX))||
         (!strcmp(action,ACTION_SHOW)&&!strcmp(p->segment,PREOBJ_STATUS))||
         (!strcmp(action,ACTION_INSERT)&&!strcmp(p->segment,PREOBJ_INTO))||
-        (!strcmp(action,ACTION_UPDATE)&&!strcmp(p->segment,PREOBJ_VALUE))||
-        (!strcmp(action,ACTION_DROP)&&!strcmp(p->segment,PREOBJ_TABLE))||
-        (!strcmp(action,ACTION_DROP)&&!strcmp(p->segment,PREOBJ_ROW))
+        (!strcmp(action,ACTION_UPDATE)&&!strcmp(p->segment,PREOBJ_VALUE))
+        // (!strcmp(action,ACTION_DROP)&&!strcmp(p->segment,PREOBJ_TABLE))||
+        // (!strcmp(action,ACTION_DROP)&&!strcmp(p->segment,PREOBJ_ROW))
     )
     {
         strcpy(preobj,p->segment);
@@ -76,6 +76,7 @@ int handle_obj(char action[BUF_SZ],char object[BUF_SZ])
             {
                 //如果是 * ，则 obj 中只有 *
                 strcat(object,p->segment);
+                p=p->next;
                 break;
             }
             if(!ifShouldCOMMA&&strcmp(p->segment,SYM_COMMA))
@@ -96,6 +97,7 @@ int handle_obj(char action[BUF_SZ],char object[BUF_SZ])
             }
         }
     }
+    
     return RESULT_NORMAL;
 
 }
@@ -103,7 +105,7 @@ int handle_obj(char action[BUF_SZ],char object[BUF_SZ])
 int handle_exec(char action[BUF_SZ],char exec[BUF_SZ])
 {
     // for select
-    if(!strcmp(ACTION_SELECT,action))
+    if(!strcmp(ACTION_SELECT,action)||!strcmp(ACTION_DROP,action))
     {
         if(
             p->next==NULL||
@@ -471,7 +473,8 @@ int handle_condi(char action[BUF_SZ], char condi[BUF_SZ])
         //     return ERROR_WRONG_PARAMETER;
         // }
     }
-    else if((!strcmp(action,ACTION_UPDATE)||!strcmp(action,ACTION_SELECT))&&!strcmp(p->segment,CONDI_WHERE))
+    else if((!strcmp(action,ACTION_UPDATE)||!strcmp(action,ACTION_SELECT)||!strcmp(action,ACTION_DROP))
+    &&!strcmp(p->segment,CONDI_WHERE))
     {
         // where
         if(
@@ -561,11 +564,11 @@ int Yacc(){
         !strcmp(p->next->segment,SYM_EQUAL)
         )
         return(ERROR_TOO_FEW_PARAMETER);
-    else if(strcmp(Action,ACTION_SELECT)) //for select ,select 没有 preObj
+    else if(strcmp(Action,ACTION_SELECT)&&strcmp(Action,ACTION_DROP)) //for select ,select 没有 preObj
         p=p->next;
 
     //处理第二个字段是否时合法 PreObj
-    if(strcmp(Action,ACTION_SELECT))
+    if(strcmp(Action,ACTION_SELECT)&&strcmp(Action,ACTION_DROP))
         if(handle_preobj(Action,PreObject)==ERROR_WRONG_PARAMETER)
             return(ERROR_WRONG_PARAMETER);
 
@@ -592,8 +595,8 @@ int Yacc(){
     }
 
     // stage Exec=
-    // Show 命令 与 Drop 命令 不需要 Exec 字段
-    if(strcmp(Action,ACTION_SHOW)&&strcmp(Action,ACTION_DROP))
+    // Show 命令 不需要 Exec 字段
+    if(strcmp(Action,ACTION_SHOW))
     {
         //检查是否存在第四个字段 且 第四个字段是否为空串或分号或圆括号或逗号或等号
         //若第四个字段不为空 则 p 指向第四个字段
@@ -624,7 +627,7 @@ int Yacc(){
     if(
         (!strcmp(Action,ACTION_SHOW)&&strcmp(PreObject,PREOBJ_TABLES))||
         !strcmp(Action,ACTION_UPDATE)||!strcmp(Action,ACTION_SELECT)||
-        (!strcmp(Action,ACTION_DROP)&&!strcmp(PreObject,PREOBJ_ROW))
+        (!strcmp(Action,ACTION_DROP))
     )
     {
         //检查是否存在第五个字段 且 第五个字段是否为空串或分号或圆括号或逗号或等号
