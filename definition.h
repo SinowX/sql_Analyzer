@@ -2,6 +2,9 @@
 #define _DEFINATION
 
 #define BUF_SZ 256
+#define SERVER_ADDR "127.0.0.1"
+#define SERVER_PORT 5000
+// #define BUF_SZ  256
 
 const char* ACTION_CREATE="create";
 const char* ACTION_SELECT="select"; //for select
@@ -9,6 +12,8 @@ const char* ACTION_SHOW="show";
 const char* ACTION_INSERT="insert";
 const char* ACTION_UPDATE="update";
 const char* ACTION_DROP="drop";
+const char* ACTION_SESSION_ON="session_on";
+const char* ACTION_SESSION_OFF="session_of";
 
 const char* PREOBJ_TABLE="table";
 const char* PREOBJ_TABLES="tables";
@@ -34,6 +39,7 @@ const char* SYM_CLOSE_PAREN=")";
 const char* SYM_SEMICOLON=";";
 const char* SYM_STAR="*"; // for select
 const char* SYM_DOT=".";
+const char* SYM_UNDERSCORE="_";
 
 
 

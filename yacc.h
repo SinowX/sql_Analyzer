@@ -15,7 +15,8 @@ int handle_act(char action[BUF_SZ])
 {
     if(!strcmp(p->segment,ACTION_CREATE)||!strcmp(p->segment,ACTION_SHOW)||
     !strcmp(p->segment,ACTION_INSERT)||!strcmp(p->segment,ACTION_UPDATE)||
-    !strcmp(p->segment,ACTION_DROP)||!strcmp(p->segment,ACTION_SELECT)) // for select
+    !strcmp(p->segment,ACTION_DROP)||!strcmp(p->segment,ACTION_SELECT)||
+    !strcmp(p->segment,ACTION_SESSION_ON)||!strcmp(p->segment,ACTION_SESSION_OFF)) // for select
     {
         strcpy(action,p->segment);
         return RESULT_NORMAL;
@@ -422,6 +423,7 @@ int handle_exec(char action[BUF_SZ],char exec[BUF_SZ])
                     p=p->next;
                     strcat(exec,"=");
                     strcat(exec,p->segment);
+                    strcat(exec,";");
                     return RESULT_NORMAL;
                 }
                 else
@@ -510,6 +512,7 @@ int handle_condi(char action[BUF_SZ], char condi[BUF_SZ])
                                 p=p->next;
                                 // $columnname2
                                 strcat(condi,p->segment);
+                                strcat(condi,";");
                                 return RESULT_NORMAL;
                             }
                             else
@@ -552,6 +555,11 @@ int Yacc(){
     if((handle_act(Action)==ERROR_WRONG_PARAMETER))
         return(ERROR_WRONG_PARAMETER);
     
+    if(!strcmp(Action,ACTION_SESSION_ON)||!strcmp(Action,ACTION_SESSION_OFF))
+    {
+        set_pack(Action,PreObject,Object,Exec,Condition);
+        return RESULT_NORMAL;
+    }
     // stage PreObject
     //检查是否存在第二个字段 且 第二个字段是否为空串或分号或圆括号或逗号或等号
     //若第二个字段不为空 则 p 指向第二个字段

@@ -1,64 +1,14 @@
 [sinow@Maj ~]$ cd workspace/parser_analyzer/
 [sinow@Maj parser_analyzer]$ ./main 
 [sinow@Maj]$ create table sinow (fuck int primary,shit double not null,holy time null);
-create
-table
-sinow
-(
-fuck
-int
-primary
-,
-shit
-double
-not
-null
-,
-holy
-time
-null
-)
-;
+
 Action: create
 PreObj: table
 Object: sinow
 Exec: fuck=int:primary:;shit=double:not:null:;holy=time:null:;
 Condi: 
 Complete.
-[sinow@Maj]$ show tables;
-show
-tables
-;
-Action: show
-PreObj: tables
-Object: 
-Exec: 
-Condi: 
-Complete.
-[sinow@Maj]$ show columns from sinow;
-show
-columns
-from
-sinow
-;
-Action: show
-PreObj: columns
-Object: 
-Exec: 
-Condi: sinow
-Complete.
-[sinow@Maj]$ show index from sinow;
-show
-index
-from
-sinow
-;
-Action: show
-PreObj: index
-Object: 
-Exec: 
-Condi: sinow
-Complete.
+
 [sinow@Maj]$ insert into sinow (fuck,shit,holy) values (23,32,65);
 insert
 into
@@ -103,6 +53,7 @@ PreObj: value
 Object: sinow
 Exec: fuck=44
 Condi: shit=12
+//拓展Condi 形式
 Complete.
 [sinow@Maj]$ drop table sinow;
 drop
